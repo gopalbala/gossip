@@ -17,8 +17,10 @@ public class Node {
     private GossipConfig config;
 
     public Node(InetSocketAddress address,
+                long initialSequenceNumber,
                 GossipConfig config) {
         this.address = address;
+        this.heartbeatSequenceNumber = initialSequenceNumber;
         this.config = config;
         updateLastUpdateTime();
     }

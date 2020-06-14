@@ -27,6 +27,8 @@ public class GossipService {
         this.inetSocketAddress = inetSocketAddress;
         this.gossipConfig = gossipConfig;
         this.socketService = new SocketService(inetSocketAddress.getPort());
+        self = new Node(inetSocketAddress, 0, gossipConfig);
+        nodes.putIfAbsent(self.getUniqueId(), self);
     }
 
     public GossipService(InetSocketAddress listeningAddress,
@@ -42,6 +44,7 @@ public class GossipService {
     public void start() {
         startSenderThread();
         startReceiveThread();
+        startFailureDetectionThread();
     }
 
     public ArrayList<InetSocketAddress> getAliveMembers() {
@@ -117,6 +120,7 @@ public class GossipService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                sendGossipToRandomNode();
             }
         }).start();
     }
@@ -145,7 +149,7 @@ public class GossipService {
 
     private void sendGossipToRandomNode() {
         self.incremenetSequenceNumber();
-        List<String> peersToUpdate = new ArrayList<String>();
+        List<String> peersToUpdate = new ArrayList<>();
         Object[] keys = nodes.keySet().toArray();
         if (keys.length < gossipConfig.peersToUpdatePerInterval) {
             for (int i = 0; i < keys.length; i++) {

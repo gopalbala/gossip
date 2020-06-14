@@ -36,6 +36,7 @@ public class SocketService {
             Node message = null;
             try {
                 message = (Node) objectInputStream.readObject();
+                System.out.println("Received gossip message from [" + message.getUniqueId() + "]");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } finally {
@@ -58,6 +59,7 @@ public class SocketService {
             System.out.println
                     ("Could not send " + message.getNetworkMessage() +
                             "] because: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return bStream.toByteArray();
@@ -66,6 +68,7 @@ public class SocketService {
     private void sendGossipMessage(Node target, byte[] data) {
         DatagramPacket packet = new DatagramPacket(data, data.length, target.getInetAddress(), target.getPort());
         try {
+            System.out.println("Sending gossip message to [" + target.getUniqueId() + "]");
             datagramSocket.send(packet);
         } catch (IOException e) {
             System.out.println("Fatal error trying to send: "

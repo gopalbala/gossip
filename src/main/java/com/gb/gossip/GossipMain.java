@@ -11,8 +11,8 @@ public class GossipMain {
         GossipConfig gossipConfig = new GossipConfig(
                 Duration.ofSeconds(3),
                 Duration.ofSeconds(3),
-                Duration.ofSeconds(500),
-                Duration.ofSeconds(200),
+                Duration.ofMillis(500),
+                Duration.ofMillis(500),
                 3
         );
         GossipService initialNode = new GossipService

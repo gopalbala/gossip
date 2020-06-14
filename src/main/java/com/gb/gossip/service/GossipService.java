@@ -45,6 +45,7 @@ public class GossipService {
         startSenderThread();
         startReceiverThread();
         startFailureDetectionThread();
+        printNodes();
     }
 
     public ArrayList<InetSocketAddress> getAliveMembers() {
@@ -115,12 +116,12 @@ public class GossipService {
     private void startSenderThread() {
         new Thread(() -> {
             while (!stopped) {
+                sendGossipToRandomNode();
                 try {
                     Thread.sleep(gossipConfig.updateFrequency.toMillis());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                sendGossipToRandomNode();
             }
         }).start();
     }
@@ -228,5 +229,22 @@ public class GossipService {
                 }
             }
         }
+    }
+
+    private void printNodes() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            getAliveMembers().forEach(node ->
+                    System.out.println("Health status: " + node.getHostName() + ":"
+                            + node.getPort() + "- alive"));
+
+            getFailedMembers().forEach(node ->
+                    System.out.println("Health status: " + node.getHostName() + ":"
+                            + node.getPort() + "- failed"));
+        }).start();
     }
 }

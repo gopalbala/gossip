@@ -51,6 +51,7 @@ public class SocketService {
 
     private byte[] getBytesToWrite(Node message) {
         ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        System.out.println("Writing message " + message.getNetworkMessage());
         try {
             ObjectOutput oo = new ObjectOutputStream(bStream);
             oo.writeObject(message);
@@ -61,7 +62,6 @@ public class SocketService {
                             "] because: " + e.getMessage());
             e.printStackTrace();
         }
-
         return bStream.toByteArray();
     }
 
@@ -74,7 +74,7 @@ public class SocketService {
             System.out.println("Fatal error trying to send: "
                     + packet + " to [" + target.getSocketAddress() + "]");
             e.printStackTrace();
-            System.exit(-1);
+            //System.exit(-1);
         }
     }
 }

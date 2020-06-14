@@ -146,7 +146,6 @@ public class GossipService {
         }).start();
     }
 
-
     private void sendGossipToRandomNode() {
         self.incrementSequenceNumber();
         List<String> peersToUpdate = new ArrayList<>();

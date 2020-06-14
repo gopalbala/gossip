@@ -1,6 +1,7 @@
-package com.gb.gossip.config;
+package com.gb.gossip;
 
-import com.gb.gossip.config.service.GossipService;
+import com.gb.gossip.config.GossipConfig;
+import com.gb.gossip.service.GossipService;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -10,8 +11,8 @@ public class GossipMain {
         GossipConfig gossipConfig = new GossipConfig(
                 Duration.ofSeconds(3),
                 Duration.ofSeconds(3),
-                Duration.ofSeconds(2),
-                Duration.ofSeconds(1),
+                Duration.ofSeconds(500),
+                Duration.ofSeconds(200),
                 3
         );
         GossipService initialNode = new GossipService
@@ -39,9 +40,10 @@ public class GossipMain {
         });
 
         initialNode.start();
-        for (int i = 0; i < 10; i++) {
+
+        for (int i = 1; i <= 10; i++) {
             GossipService gossipService = new GossipService
-                    (new InetSocketAddress("127.0.0.1", 9091 + i),
+                    (new InetSocketAddress("127.0.0.1", 9090 + i),
                             new InetSocketAddress("127.0.0.1", 9090 + i - 1), gossipConfig);
             gossipService.start();
         }

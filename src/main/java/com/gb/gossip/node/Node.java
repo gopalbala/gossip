@@ -1,4 +1,4 @@
-package com.gb.gossip.config.member;
+package com.gb.gossip.node;
 
 import com.gb.gossip.config.GossipConfig;
 
@@ -14,7 +14,7 @@ public class Node implements Serializable {
     private final InetSocketAddress address;
     private long heartbeatSequenceNumber = 0;
     private LocalDateTime lastUpdateTime = null;
-    private boolean hasFailed = false;
+    private volatile boolean failed = false;
     private GossipConfig config;
 
     public Node(InetSocketAddress address,
@@ -23,7 +23,7 @@ public class Node implements Serializable {
         this.address = address;
         this.heartbeatSequenceNumber = initialSequenceNumber;
         this.config = config;
-        setLastUpdateTime();
+        setLastUpdatedTime();
     }
 
     public void setConfig(GossipConfig config) {
@@ -61,11 +61,15 @@ public class Node implements Serializable {
                     + this.getUniqueId() + " is " + this.getSequenceNumber()
                     + " updated to " + newSequenceNumber
             );
-            setLastUpdateTime();
+            setLastUpdatedTime();
         }
     }
 
-    public void setLastUpdateTime() {
+    public void setFailed(boolean failed) {
+        this.failed = failed;
+    }
+
+    public void setLastUpdatedTime() {
         LocalDateTime updatedTime = LocalDateTime.now();
         System.out.println("Node " + this.getUniqueId() + " at " + updatedTime);
         lastUpdateTime = updatedTime;
@@ -73,17 +77,17 @@ public class Node implements Serializable {
 
     public void incrementSequenceNumber() {
         heartbeatSequenceNumber++;
-        setLastUpdateTime();
+        setLastUpdatedTime();
     }
 
     public void checkIfFailed() {
         LocalDateTime failureTime = lastUpdateTime.plus(config.failureTimeout);
         LocalDateTime now = LocalDateTime.now();
-        hasFailed = now.isAfter(failureTime);
+        failed = now.isAfter(failureTime);
     }
 
     public boolean shouldCleanup() {
-        if (hasFailed) {
+        if (failed) {
             Duration cleanupTimeout = config.failureTimeout.plus(config.cleanupTimeout);
             LocalDateTime cleanupTime = lastUpdateTime.plus(cleanupTimeout);
             LocalDateTime now = LocalDateTime.now();
@@ -94,7 +98,7 @@ public class Node implements Serializable {
     }
 
     public boolean hasFailed() {
-        return hasFailed;
+        return failed;
     }
 
     public String getNetworkMessage() {

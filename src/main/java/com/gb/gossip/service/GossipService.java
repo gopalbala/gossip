@@ -1,7 +1,7 @@
-package com.gb.gossip.config.service;
+package com.gb.gossip.service;
 
 import com.gb.gossip.config.GossipConfig;
-import com.gb.gossip.config.member.Node;
+import com.gb.gossip.node.Node;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -188,7 +188,7 @@ public class GossipService {
         if (existingMember == null) {
             synchronized (nodes) {
                 newNode.setConfig(gossipConfig);
-                newNode.setLastUpdateTime();
+                newNode.setLastUpdatedTime();
                 nodes.putIfAbsent(newNode.getUniqueId(), newNode);
                 if (onNewMember != null) {
                     onNewMember.update(newNode.getSocketAddress());
@@ -209,12 +209,13 @@ public class GossipService {
             node.checkIfFailed();
             if (hadFailed != node.hasFailed()) {
                 if (node.hasFailed()) {
+                    //nodes.remove(key);
                     if (onFailedMember != null) {
                         onFailedMember.update(node.getSocketAddress());
-                    }
-                } else {
-                    if (onRevivedMember != null) {
-                        onRevivedMember.update(node.getSocketAddress());
+                    } else {
+                        if (onRevivedMember != null) {
+                            onRevivedMember.update(node.getSocketAddress());
+                        }
                     }
                 }
             }

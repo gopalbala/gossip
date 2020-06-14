@@ -1,4 +1,4 @@
-package com.gb.gossip.config.service;
+package com.gb.gossip.service;
 
 import java.net.InetSocketAddress;
 

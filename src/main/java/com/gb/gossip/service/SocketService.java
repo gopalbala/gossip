@@ -1,6 +1,6 @@
-package com.gb.gossip.config.service;
+package com.gb.gossip.service;
 
-import com.gb.gossip.config.member.Node;
+import com.gb.gossip.node.Node;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -74,7 +74,7 @@ public class SocketService {
             System.out.println("Fatal error trying to send: "
                     + packet + " to [" + target.getSocketAddress() + "]");
             e.printStackTrace();
-            //System.exit(-1);
+//            target.setFailed(true);
         }
     }
 }

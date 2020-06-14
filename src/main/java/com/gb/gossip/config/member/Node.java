@@ -23,7 +23,7 @@ public class Node implements Serializable {
         this.address = address;
         this.heartbeatSequenceNumber = initialSequenceNumber;
         this.config = config;
-        updateLastUpdateTime();
+        setLastUpdateTime();
     }
 
     public void setConfig(GossipConfig config) {
@@ -57,23 +57,28 @@ public class Node implements Serializable {
     public void updateSequenceNumber(long newSequenceNumber) {
         if (newSequenceNumber > heartbeatSequenceNumber) {
             heartbeatSequenceNumber = newSequenceNumber;
-            updateLastUpdateTime();
+            System.out.println("Sequence number of current node "
+                    + this.getUniqueId() + " is " + this.getSequenceNumber()
+                    + " updated to " + newSequenceNumber
+            );
+            setLastUpdateTime();
         }
     }
 
-    public void updateLastUpdateTime() {
-        lastUpdateTime = LocalDateTime.now();
+    public void setLastUpdateTime() {
+        LocalDateTime updatedTime = LocalDateTime.now();
+        System.out.println("Node " + this.getUniqueId() + " at " + updatedTime);
+        lastUpdateTime = updatedTime;
     }
 
-    public void incremenetSequenceNumber() {
+    public void incrementSequenceNumber() {
         heartbeatSequenceNumber++;
-        updateLastUpdateTime();
+        setLastUpdateTime();
     }
 
     public void checkIfFailed() {
         LocalDateTime failureTime = lastUpdateTime.plus(config.failureTimeout);
         LocalDateTime now = LocalDateTime.now();
-
         hasFailed = now.isAfter(failureTime);
     }
 
@@ -82,7 +87,6 @@ public class Node implements Serializable {
             Duration cleanupTimeout = config.failureTimeout.plus(config.cleanupTimeout);
             LocalDateTime cleanupTime = lastUpdateTime.plus(cleanupTimeout);
             LocalDateTime now = LocalDateTime.now();
-
             return now.isAfter(cleanupTime);
         } else {
             return false;

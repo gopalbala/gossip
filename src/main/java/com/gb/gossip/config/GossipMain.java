@@ -17,11 +17,27 @@ public class GossipMain {
         GossipService initialNode = new GossipService
                 (new InetSocketAddress("127.0.0.1", 9090), gossipConfig);
 
-        initialNode.setOnNewMemberHandler((inetSocketAddress) -> {
+        initialNode.setOnNewNodeHandler((inetSocketAddress) -> {
             System.out.println("Connected to " +
                     inetSocketAddress.getHostName() + ":"
                     + inetSocketAddress.getPort());
         });
+
+        initialNode.setOnFailedNodeHandler((inetSocketAddress) -> {
+            System.out.println("Node " + inetSocketAddress.getHostName() + ":"
+                    + inetSocketAddress.getPort() + " failed");
+        });
+
+        initialNode.setOnRemoveNodeHandler((inetSocketAddress) -> {
+            System.out.println("Node " + inetSocketAddress.getHostName() + ":"
+                    + inetSocketAddress.getPort() + " removed");
+        });
+
+        initialNode.setOnRevivedNodeHandler((inetSocketAddress) -> {
+            System.out.println("Node " + inetSocketAddress.getHostName() + ":"
+                    + inetSocketAddress.getPort() + " revived");
+        });
+
         initialNode.start();
         for (int i = 0; i < 10; i++) {
             GossipService gossipService = new GossipService

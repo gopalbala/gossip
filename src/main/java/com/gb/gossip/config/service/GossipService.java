@@ -96,19 +96,19 @@ public class GossipService {
         stopped = true;
     }
 
-    public void setOnNewMemberHandler(GossipUpdater onNewMember) {
+    public void setOnNewNodeHandler(GossipUpdater onNewMember) {
         this.onNewMember = onNewMember;
     }
 
-    public void setOnFailedMemberHandler(GossipUpdater onFailedMember) {
+    public void setOnFailedNodeHandler(GossipUpdater onFailedMember) {
         this.onFailedMember = onFailedMember;
     }
 
-    public void setOnRevivedMemberHandler(GossipUpdater onRevivedMember) {
+    public void setOnRevivedNodeHandler(GossipUpdater onRevivedMember) {
         this.onRevivedMember = onRevivedMember;
     }
 
-    public void setOnRemoveMemberHandler(GossipUpdater onRemovedMember) {
+    public void setOnRemoveNodeHandler(GossipUpdater onRemovedMember) {
         this.onRemovedMember = onRemovedMember;
     }
 

@@ -43,7 +43,7 @@ public class GossipService {
 
     public void start() {
         startSenderThread();
-        startReceiveThread();
+        startReceiverThread();
         startFailureDetectionThread();
     }
 
@@ -125,10 +125,10 @@ public class GossipService {
         }).start();
     }
 
-    private void startReceiveThread() {
+    private void startReceiverThread() {
         new Thread(() -> {
             while (!stopped) {
-                receiveNodeList();
+                receivePeerMessage();
             }
         }).start();
     }
@@ -136,7 +136,7 @@ public class GossipService {
     private void startFailureDetectionThread() {
         new Thread(() -> {
             while (!stopped) {
-                detectFailedMembers();
+                detectFailedNodes();
                 try {
                     Thread.sleep(gossipConfig.failureDetectionFrequency.toMillis());
                 } catch (InterruptedException ie) {
@@ -148,9 +148,10 @@ public class GossipService {
 
 
     private void sendGossipToRandomNode() {
-        self.incremenetSequenceNumber();
+        self.incrementSequenceNumber();
         List<String> peersToUpdate = new ArrayList<>();
         Object[] keys = nodes.keySet().toArray();
+        //
         if (keys.length < gossipConfig.peersToUpdatePerInterval) {
             for (int i = 0; i < keys.length; i++) {
                 String key = (String) keys[i];
@@ -182,26 +183,25 @@ public class GossipService {
         return randomIndex;
     }
 
-    private void receiveNodeList() {
+    private void receivePeerMessage() {
         Node newNode = socketService.receiveGossip();
-
         Node existingMember = nodes.get(newNode.getUniqueId());
-
         if (existingMember == null) {
             synchronized (nodes) {
                 newNode.setConfig(gossipConfig);
-                newNode.updateLastUpdateTime();
+                newNode.setLastUpdateTime();
                 nodes.putIfAbsent(newNode.getUniqueId(), newNode);
                 if (onNewMember != null) {
                     onNewMember.update(newNode.getSocketAddress());
                 }
             }
         } else {
+            System.out.println("Updating sequence number for node " + existingMember.getUniqueId());
             existingMember.updateSequenceNumber(newNode.getSequenceNumber());
         }
     }
 
-    private void detectFailedMembers() {
+    private void detectFailedNodes() {
         String[] keys = new String[nodes.size()];
         nodes.keySet().toArray(keys);
         for (String key : keys) {
@@ -212,10 +212,10 @@ public class GossipService {
                 if (node.hasFailed()) {
                     if (onFailedMember != null) {
                         onFailedMember.update(node.getSocketAddress());
-                    } else {
-                        if (onRevivedMember != null) {
-                            onRevivedMember.update(node.getSocketAddress());
-                        }
+                    }
+                } else {
+                    if (onRevivedMember != null) {
+                        onRevivedMember.update(node.getSocketAddress());
                     }
                 }
             }

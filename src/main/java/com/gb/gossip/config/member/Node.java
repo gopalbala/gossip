@@ -2,13 +2,14 @@ package com.gb.gossip.config.member;
 
 import com.gb.gossip.config.GossipConfig;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 
-public class Node {
+public class Node implements Serializable {
 
     private final InetSocketAddress address;
     private long heartbeatSequenceNumber = 0;

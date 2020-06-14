@@ -1,8 +1,9 @@
 package com.gb.gossip.config;
 
+import java.io.Serializable;
 import java.time.Duration;
 
-public class GossipConfig {
+public class GossipConfig implements Serializable {
     public final Duration failureTimeout;
     public final Duration cleanupTimeout;
     public final Duration updateFrequency;

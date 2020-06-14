@@ -66,7 +66,8 @@ public class SocketService {
     }
 
     private void sendGossipMessage(Node target, byte[] data) {
-        DatagramPacket packet = new DatagramPacket(data, data.length, target.getInetAddress(), target.getPort());
+        DatagramPacket packet = new DatagramPacket
+                (data, data.length, target.getInetAddress(), target.getPort());
         try {
             System.out.println("Sending gossip message to [" + target.getUniqueId() + "]");
             datagramSocket.send(packet);
